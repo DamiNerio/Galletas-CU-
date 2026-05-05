@@ -52,6 +52,6 @@ authForm.addEventListener('submit', async (e) => {
         // LOGIN
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) alert("Error: " + error.message);
-        else window.location.href = 'index.HTML'; // Redirigir a la tienda
+        else window.location.href = 'index.html'; // Redirigir a la tienda
     }
 });
