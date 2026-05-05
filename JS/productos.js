@@ -11,7 +11,7 @@ function mostrarProductos(productos) {
     contenedor.innerHTML = '';
 
     productos.forEach(galleta => {
-        // Verificamos si hay stock
+        
         const hayStock = galleta.stock > 0;
         
         contenedor.innerHTML += `

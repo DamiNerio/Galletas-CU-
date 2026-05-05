@@ -166,10 +166,10 @@ async function cargarPedidos() {
     let consulta = supabase.from('pedidos').select('*');
 
     if (perfil?.es_admin) {
-        // SI ES ADMIN: Trae TODOS los pedidos de todos los clientes
+       
         console.log("Acceso de Administrador");
     } else {
-        // SI ES CLIENTE: Solo trae sus propios pedidos
+      
         consulta = consulta.eq('user_id', user.id);
     }
 
@@ -184,34 +184,29 @@ window.realizarPedido = async function() {
     if (!user) return alert("Debes iniciar sesión");
 
     try {
-        // --- VALIDACIÓN DE INFORMACIÓN DE CONTACTO ---
-        // Consultamos si el perfil tiene los datos necesarios
+        
         const { data: perfil, error: errorPerfil } = await supabase
             .from('perfiles')
             .select('nombre_completo, telefono, direccion')
             .eq('id', user.id)
             .single();
 
-        // Si falta algún dato, detenemos el proceso y lo mandamos a perfil.html
+       
         if (errorPerfil || !perfil?.nombre_completo || !perfil?.telefono || !perfil?.direccion) {
             alert("⚠️ ¡Atención! Necesitamos tu nombre, teléfono y dirección para entregar tus galletas.");
             window.location.href = 'perfil.html'; 
-            return; // Corta la ejecución para que no se cree el pedido
+            return; 
         }
-        // ----------------------------------------------
-
-        // Si los datos están completos, sigue tu lógica normal
+       
         console.log("Datos de cliente verificados. Procesando pedido...");
         
-        // Aquí continúa tu código de validación de stock, insert en 'pedidos', etc.
-        // ...
-        
+     
     } catch (err) {
         console.error("Error al procesar pedido:", err);
     }
     
     try {
-        // 1. VALIDACIÓN DE STOCK
+   
         for (const item of carrito) {
             const { data: producto } = await supabase
                 .from('productos')
@@ -227,7 +222,7 @@ window.realizarPedido = async function() {
 
         const totalVenta = carrito.reduce((acc, item) => acc + item.precio, 0);
 
-        // 2. INSERTAR PEDIDO
+       
         const { data: pedido, error: errorPedido } = await supabase
             .from('pedidos')
             .insert({
@@ -239,7 +234,7 @@ window.realizarPedido = async function() {
 
         if (errorPedido) throw errorPedido;
 
-        // 3. INSERTAR DETALLES Y RESTAR STOCK (USANDO RPC)
+       
         for (const item of carrito) {
             await supabase.from('detalles_pedido').insert({
                 pedido_id: pedido.id,
@@ -248,7 +243,7 @@ window.realizarPedido = async function() {
                 precio_unitario: item.precio
             });
 
-            // Llamada a tu función de SQL
+          
             await supabase.rpc('restar_stock', { 
                 prod_id: item.id, 
                 cant: 1 

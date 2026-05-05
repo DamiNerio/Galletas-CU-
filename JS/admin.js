@@ -1,7 +1,7 @@
 import { supabase } from './config.js';
 
 async function verificarAccesoAdmin() {
-    // 1. Obtener el usuario actual
+   
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -9,7 +9,7 @@ async function verificarAccesoAdmin() {
         return;
     }
 
-    // 2. Consultar si tiene el rol de admin en su perfil
+   
     const { data: perfil, error } = await supabase
         .from('perfiles')
         .select('es_admin')
@@ -18,20 +18,19 @@ async function verificarAccesoAdmin() {
 
     if (error || !perfil?.es_admin) {
         alert("Acceso denegado. Solo para administradores.");
-        window.location.href = 'index.html'; // Redirigir a la tienda
+        window.location.href = 'index.html'; 
         return;
     }
 
-    // Si todo está bien, cargamos los datos
+   
     cargarPedidosAdmin();
     cargarGestionStock();
 }
 
-// Llamamos a la verificación al cargar la página
 verificarAccesoAdmin();
-// --- FUNCIONES DE PEDIDOS ---
 
-// Dentro de admin.js
+
+
 async function cargarPedidosAdmin(estado = 'pendiente') {
     const tabla = document.getElementById('tabla-admin-pedidos');
     tabla.innerHTML = '<tr><td colspan="6" class="text-center">Cargando pedidos...</td></tr>';
@@ -56,7 +55,7 @@ async function cargarPedidosAdmin(estado = 'pendiente') {
         return;
     }
 
-    tabla.innerHTML = ''; // Limpiamos el mensaje de carga
+    tabla.innerHTML = '';
 
     pedidos.forEach(p => {
         const fila = document.createElement('tr');
@@ -86,20 +85,18 @@ async function cargarPedidosAdmin(estado = 'pendiente') {
     });
 }
 
-// CRUCIAL: Exponer las funciones para que el "onclick" del HTML las vea
 window.cargarPedidosAdmin = cargarPedidosAdmin;
 window.cambiarEstadoPedido = async function(id, nuevoEstado) {
     try {
         const { error } = await supabase
             .from('pedidos')
-            .update({ estado: nuevoEstado }) // 'entregado'
+            .update({ estado: nuevoEstado }) 
             .eq('id', id);
 
         if (error) throw error;
 
         alert("¡Pedido entregado con éxito!");
         
-        // RECARGA: Volvemos a pedir los 'pendientes' para que el que acabas de entregar ya no aparezca
         cargarPedidosAdmin('pendiente'); 
         
     } catch (err) {
@@ -108,21 +105,20 @@ window.cambiarEstadoPedido = async function(id, nuevoEstado) {
     }
 };
 
-// Nueva función para que el admin vea qué galletas pidieron
+
 window.verDetallesAdmin = async (pedidoId) => {
     const filaDetalle = document.getElementById(`detalles-${pedidoId}`);
     const contenedor = document.getElementById(`contenido-detalles-${pedidoId}`);
 
-    // Si ya está visible, lo ocultamos (toggle)
+    
     if (filaDetalle.style.display === 'table-row') {
         filaDetalle.style.display = 'none';
         return;
     }
 
-    // Mostramos la fila
+    
     filaDetalle.style.display = 'table-row';
 
-    // Consultamos los productos de ese pedido
     const { data: detalles, error } = await supabase
         .from('detalles_pedido')
         .select(`
@@ -136,7 +132,7 @@ window.verDetallesAdmin = async (pedidoId) => {
         return;
     }
 
-    // Dibujamos la lista de galletas
+
     if (detalles && detalles.length > 0) {
         let html = '<strong>Productos del pedido:</strong><ul class="mb-0 mt-2">';
         detalles.forEach(item => {
@@ -149,12 +145,12 @@ window.verDetallesAdmin = async (pedidoId) => {
     }
 };
 
-// --- FUNCIONES DE STOCK ---
+
 window.verDetalles = async function(pedidoId) {
     const lista = document.getElementById('lista-detalles');
     lista.innerHTML = '<li>Cargando...</li>';
     
-    // Abrir el modal manualmente
+  
     const myModal = new bootstrap.Modal(document.getElementById('modalDetalles'));
     myModal.show();
 
@@ -220,10 +216,9 @@ window.actualizarStock = async (id) => {
     else alert("Stock actualizado correctamente");
 };
 
-// --- INICIALIZACIÓN ---
-// Exponemos las funciones al objeto window para que los botones las encuentren
+
 window.cargarPedidosAdmin = cargarPedidosAdmin;
 
-// Carga inicial
+
 cargarPedidosAdmin();
 cargarGestionStock();

@@ -59,7 +59,7 @@ async function cargarHistorial() {
     });
 }
 
-// Definimos verDetalles en el objeto window para que el onclick del HTML lo encuentre
+
 window.verDetalles = async (pedidoId) => {
     const { data: detalles, error } = await supabase
         .from('detalles_pedido')
@@ -88,5 +88,5 @@ window.verDetalles = async (pedidoId) => {
     }
 };
 
-// Ejecutamos la función principal
+
 cargarHistorial();

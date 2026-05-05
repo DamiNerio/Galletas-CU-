@@ -12,7 +12,7 @@ const btnAuth = document.getElementById('btn-auth');
 
 let isRegistering = false;
 
-// Intercambiar entre Login y Registro
+
 toggleAuth.addEventListener('click', (e) => {
     e.preventDefault();
     isRegistering = !isRegistering;
@@ -30,7 +30,7 @@ toggleAuth.addEventListener('click', (e) => {
     }
 });
 
-// Manejar el envío del formulario
+
 authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('email').value;
@@ -38,18 +38,18 @@ authForm.addEventListener('submit', async (e) => {
     const fullName = document.getElementById('full_name').value;
 
     if (isRegistering) {
-        // REGISTRO
+        
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
             options: {
-                data: { full_name: fullName } // Esto lo recibirá nuestro Trigger de SQL
+                data: { full_name: fullName } 
             }
         });
         if (error) alert("Error al registrar: " + error.message);
         else alert("¡Registro exitoso! Revisa tu correo para confirmar.");
     } else {
-        // LOGIN
+       
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) alert("Error: " + error.message);
         else window.location.href = 'index.html'; // Redirigir a la tienda
